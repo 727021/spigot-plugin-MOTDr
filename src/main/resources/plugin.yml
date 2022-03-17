@@ -4,5 +4,22 @@ description: Display random MOTDs on every ping and when players join the server
 version: 0.1
 api-version: 1.18
 author: 727021
-# TODO: Permissions
-# TODO: Commands
+commands:
+  motd:
+    description: Display a random MOTD, or toggle whether you see an MOTD when joining the server
+    permission: motdr.motd
+    usage: /<command> [toggle]
+  motdr:
+    description: List, add, and remove server MOTDs
+    permission: motdr.motdr
+    usage: /<command> [list|add|remove] [page|message|number]
+permissions:
+  motdr.join:
+    description: Allows players to see an MOTD when they join
+    default: true
+  motdr.motd:
+    description: Allows you to display a random MOTD in-game
+    default: true
+  motdr.motdr:
+    description: Allows you to manage the MOTD list
+    default: op
