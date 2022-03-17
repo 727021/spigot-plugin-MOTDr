@@ -1,6 +1,6 @@
-main: dev.aschim.mc.motdr.Main
+main: dev.aschim.mc.motdr.MOTDr
 name: MOTDr
-description: Display random MOTDs on every ping, and when players join the server
+description: Display random MOTDs on every ping and when players join the server
 version: 0.1
 api-version: 1.18
 author: 727021
