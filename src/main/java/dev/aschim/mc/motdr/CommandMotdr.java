@@ -61,7 +61,7 @@ public class CommandMotdr implements CommandExecutor {
         } else {
             sender.sendMessage("MOTD List: (Page " + page + " of " + numPages + ")");
             for (int i = (page - 1) * pageSize; i < page * pageSize && i < messages.size(); i++) {
-                sender.sendMessage(String.valueOf(i) + ": " + messages.get(i));
+                sender.sendMessage(String.valueOf(i + 1) + ": " + messages.get(i));
             }
         }
         return true;
@@ -82,8 +82,11 @@ public class CommandMotdr implements CommandExecutor {
             return false;
         } else {
             try {
-                int index = Integer.parseInt(args.get(0));
+                int index = Integer.parseInt(args.get(0)) - 1;
                 String message = plugin.utils.removeMessage(index);
+                if (message == null) {
+                    return false;
+                }
                 sender.sendMessage("Removed MOTD: " + message);
                 return true;
             } catch (Exception e) {
