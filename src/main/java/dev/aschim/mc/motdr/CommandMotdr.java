@@ -7,12 +7,15 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public class CommandMotdr implements CommandExecutor {
+public class CommandMotdr implements CommandExecutor, TabCompleter {
     private final MOTDr plugin;
+    private static final int PAGE_SIZE = 10;
 
     public CommandMotdr(MOTDr plugin) {
         plugin.getCommand("motdr").setExecutor(this);
+        plugin.getCommand("motdr").setTabCompleter(this);
         this.plugin = plugin;
     }
 
@@ -35,8 +38,36 @@ public class CommandMotdr implements CommandExecutor {
         return false;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        List<String> options = new ArrayList<>();
+        if (args.length <= 1) {
+            options.add("list");
+            options.add("add");
+            options.add("remove");
+        } else if (args.length > 1) {
+            List<String> messages = plugin.utils.getMessages();
+            if (args[0].equalsIgnoreCase("list")) {
+                final int numPages = (int) Math.ceil((double) messages.size() / PAGE_SIZE);
+                for (int i = 0; i < numPages; i++) {
+                    String page = Integer.toString(i + 1);
+                    if (args[1].isBlank() || page.startsWith(args[1])) {
+                        options.add(page);
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("remove")) {
+                for (int i = 0; i < messages.size(); i++) {
+                    String num = Integer.toString(i + 1);
+                    if (args[1].isBlank() || num.startsWith(args[1])) {
+                        options.add(num);
+                    }
+                }
+            }
+        }
+        return options;
+    }
+
     private boolean listMessages(CommandSender sender, List<String> args) {
-        final int pageSize = 10;
         int page = 1;
         if (!args.isEmpty()) {
             try {
@@ -47,7 +78,7 @@ public class CommandMotdr implements CommandExecutor {
         }
 
         List<String> messages = plugin.utils.getMessages();
-        final int numPages = (int) Math.ceil((double) messages.size() / pageSize);
+        final int numPages = (int) Math.ceil((double) messages.size() / PAGE_SIZE);
 
         if (page < 1) {
             page = 1;
@@ -60,7 +91,7 @@ public class CommandMotdr implements CommandExecutor {
             sender.sendMessage("No MOTDs found");
         } else {
             sender.sendMessage("MOTD List: (Page " + page + " of " + numPages + ")");
-            for (int i = (page - 1) * pageSize; i < page * pageSize && i < messages.size(); i++) {
+            for (int i = (page - 1) * PAGE_SIZE; i < page * PAGE_SIZE && i < messages.size(); i++) {
                 sender.sendMessage(String.valueOf(i + 1) + ": " + messages.get(i));
             }
         }
